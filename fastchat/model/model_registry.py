@@ -441,3 +441,9 @@ register_model_info(
     "https://huggingface.co/meta-math",
     "MetaMath is a finetune of Llama2 on [MetaMathQA](https://huggingface.co/datasets/meta-math/MetaMathQA) that specializes in mathematical reasoning.",
 )
+register_model_info(
+    ["GreenBit-yi-6b-chat-4bit"],
+    "GreenBit-Yi",
+    "https://huggingface.co/GreenBitAI",
+    "Low-bit Yi model created by GreenBitAI",
+)

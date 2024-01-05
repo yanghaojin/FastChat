@@ -663,3 +663,9 @@ register_model_info(
     "https://blog.google/technology/developers/gemma-open-models/",
     "Gemma by Google",
 )
+register_model_info(
+    ["GreenBit-yi-6b-chat-4bit"],
+    "GreenBit-Yi",
+    "https://huggingface.co/GreenBitAI",
+    "Low-bit Yi model created by GreenBitAI",
+)

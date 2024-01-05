@@ -1988,6 +1988,37 @@ class MetaMathAdapter(BaseModelAdapter):
     def get_default_conv_template(self, model_path: str) -> Conversation:
         return get_conv_template("metamath")
 
+class GreenBitAdapter(BaseModelAdapter):
+    """The model adapter for GreenBitAI low-bit models"""
+
+    def match(self, model_path: str):
+        return "greenbit" in model_path.lower()
+
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        try:
+            from low_bit_llama.model import load_llama_model
+            cache_dir = '~/.cache/huggingface/hub' # Huggingface default cache location
+            groupsize = 32 # for 4-bit
+            asym = False
+            bits = 4
+            double_groupsize = 32
+            kquant = True
+            v1 = False
+            _dtype = torch.half
+            use_gbe = False
+            model, tokenizer = load_llama_model(model_path, cache_dir=cache_dir, groupsize=groupsize,
+                                                double_groupsize=double_groupsize, bits=bits, half=True, v1=v1,
+                                                asym=asym, kquant=kquant, dtype=_dtype, use_gbe=use_gbe)
+        except ModuleNotFoundError as e:
+            print(f"Module not found: {e}.")
+        return model, tokenizer
+
+    def get_default_conv_template(self, model_path: str) -> Conversation:
+        # for GreenBit-Yi-6b-chat-4bit
+        if "chat" in model_path.lower():
+            return get_conv_template("GreenBit-Yi-chat-4bit")
+        return get_conv_template("zero_shot")
+
 
 # Note: the registration order matters.
 # The one registered earlier has a higher matching priority.
@@ -2065,6 +2096,7 @@ register_model_adapter(YiAdapter)
 register_model_adapter(DeepseekCoderAdapter)
 register_model_adapter(DeepseekChatAdapter)
 register_model_adapter(MetaMathAdapter)
+register_model_adapter(GreenBitAdapter)
 
 # After all adapters, try the default base adapter.
 register_model_adapter(BaseModelAdapter)

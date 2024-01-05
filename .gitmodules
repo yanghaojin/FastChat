@@ -1,0 +1,3 @@
+[submodule "fastchat/model/low_bit_llama"]
+	path = fastchat/model/low_bit_llama
+	url = https://github.com/GreenBitAI/private_llama_2bit.git

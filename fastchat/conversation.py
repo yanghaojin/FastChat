@@ -1345,7 +1345,7 @@ register_conv_template(
 # reference: https://huggingface.co/GreenBitAI/ to be completed
 register_conv_template(
     Conversation(
-        name="GreenBit-Yi-6b-chat-4bit",
+        name="GreenBit-Yi-chat-4bit",
         roles=("<|im_start|>user", "<|im_start|>assistant"),
         sep_style=SeparatorStyle.CHATML,
         sep="<|im_end|>",

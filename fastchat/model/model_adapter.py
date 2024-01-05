@@ -1997,6 +1997,7 @@ class GreenBitAdapter(BaseModelAdapter):
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
         try:
             from low_bit_llama.model import load_llama_model
+            # Yi-6B-4bit specific configuration:
             cache_dir = '~/.cache/huggingface/hub' # Huggingface default cache location
             groupsize = 32 # for 4-bit
             asym = False

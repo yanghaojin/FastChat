@@ -69,6 +69,7 @@ class BaseModelAdapter:
         return True
 
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        print("BASE model adapter")
         revision = from_pretrained_kwargs.get("revision", "main")
         try:
             tokenizer = AutoTokenizer.from_pretrained(
@@ -1951,7 +1952,7 @@ class YiAdapter(BaseModelAdapter):
     """The model adapter for Yi models"""
 
     def match(self, model_path: str):
-        return "yi-" in model_path.lower() and "chat" in model_path.lower()
+        return "01-ai" in model_path.lower() and "yi-" in model_path.lower() and "chat" in model_path.lower()
 
     def get_default_conv_template(self, model_path: str) -> Conversation:
         return get_conv_template("Yi-34b-chat")
@@ -1992,13 +1993,16 @@ class GreenBitAdapter(BaseModelAdapter):
     """The model adapter for GreenBitAI low-bit models"""
 
     def match(self, model_path: str):
+        print(model_path)
         return "greenbit" in model_path.lower()
 
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
         try:
-            from low_bit_llama.model import load_llama_model
+            from colorama import init, Fore, Style
+            from .low_bit_llama.model import load_llama_model
+            print(Style.BRIGHT + Fore.CYAN + f"Using GreenBitAdapter...")
             # Yi-6B-4bit specific configuration:
-            cache_dir = '~/.cache/huggingface/hub' # Huggingface default cache location
+            cache_dir = os.path.expanduser('~/.cache/huggingface/hub') # Huggingface default cache location
             groupsize = 32 # for 4-bit
             asym = False
             bits = 4
@@ -2011,14 +2015,12 @@ class GreenBitAdapter(BaseModelAdapter):
                                                 double_groupsize=double_groupsize, bits=bits, half=True, v1=v1,
                                                 asym=asym, kquant=kquant, dtype=_dtype, use_gbe=use_gbe)
         except ModuleNotFoundError as e:
-            print(f"Module not found: {e}.")
+            raise Exception(f"Module not found: {e}.")
         return model, tokenizer
 
     def get_default_conv_template(self, model_path: str) -> Conversation:
         # for GreenBit-Yi-6b-chat-4bit
-        if "chat" in model_path.lower():
-            return get_conv_template("GreenBit-Yi-chat-4bit")
-        return get_conv_template("zero_shot")
+        return get_conv_template("yi-6b-chat-w4a16g32")
 
 
 # Note: the registration order matters.

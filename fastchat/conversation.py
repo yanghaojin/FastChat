@@ -1342,10 +1342,9 @@ register_conv_template(
 )
 
 # source: https://huggingface.co/01-ai/Yi-34B-Chat/blob/main/tokenizer_config.json#L60
-# reference: https://huggingface.co/GreenBitAI/ to be completed
 register_conv_template(
     Conversation(
-        name="GreenBit-Yi-chat-4bit",
+        name="yi-6b-chat-w4a16g32",
         roles=("<|im_start|>user", "<|im_start|>assistant"),
         sep_style=SeparatorStyle.CHATML,
         sep="<|im_end|>",

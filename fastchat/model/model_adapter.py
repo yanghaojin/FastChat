@@ -1993,7 +1993,6 @@ class GreenBitAdapter(BaseModelAdapter):
     """The model adapter for GreenBitAI low-bit models"""
 
     def match(self, model_path: str):
-        print(model_path)
         return "greenbit" in model_path.lower()
 
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
@@ -2010,7 +2009,7 @@ class GreenBitAdapter(BaseModelAdapter):
             kquant = True
             v1 = False
             _dtype = torch.half
-            use_gbe = False
+            use_gbe = True
             model, tokenizer = load_llama_model(model_path, cache_dir=cache_dir, groupsize=groupsize,
                                                 double_groupsize=double_groupsize, bits=bits, half=True, v1=v1,
                                                 asym=asym, kquant=kquant, dtype=_dtype, use_gbe=use_gbe)

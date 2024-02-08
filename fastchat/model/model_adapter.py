@@ -1995,21 +1995,38 @@ class GreenBitAdapter(BaseModelAdapter):
     def match(self, model_path: str):
         return "greenbit" in model_path.lower()
 
+    def extract_bits_and_group_size(self, s):
+        # Regex patterns to find bits and group_size
+        bits_pattern = r'w(\d+)'
+        group_size_pattern = r'g(\d+)'
+
+        # Search for patterns in the string
+        bits_match = re.search(bits_pattern, s)
+        group_size_match = re.search(group_size_pattern, s)
+
+        # Extract and convert to integers if found, else default to None
+        bits = int(bits_match.group(1)) if bits_match else None
+        group_size = int(group_size_match.group(1)) if group_size_match else None
+
+        return bits, group_size
+
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
         try:
             from colorama import init, Fore, Style
             from .low_bit_llama.model import load_llama_model
-            print(Style.BRIGHT + Fore.CYAN + f"Using GreenBitAdapter...")
+            print(Style.BRIGHT + Fore.CYAN + f"Using GreenBitAdapter..." + f" model_path:" + model_path)
+
             # Yi-6B-4bit specific configuration:
+            bits, groupsize = self.extract_bits_and_group_size(model_path)
             cache_dir = os.path.expanduser('~/.cache/huggingface/hub') # Huggingface default cache location
-            groupsize = 32 # for 4-bit
             asym = False
-            bits = 4
             double_groupsize = 32
             kquant = True
             v1 = False
             _dtype = torch.half
             use_gbe = True
+            # groupsize = 32
+            # bits = 4
             model, tokenizer = load_llama_model(model_path, cache_dir=cache_dir, groupsize=groupsize,
                                                 double_groupsize=double_groupsize, bits=bits, half=True, v1=v1,
                                                 asym=asym, kquant=kquant, dtype=_dtype, use_gbe=use_gbe)

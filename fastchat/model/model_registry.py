@@ -443,7 +443,9 @@ register_model_info(
 )
 register_model_info(
     [
-        "yi-6b-chat-w4a16g32"
+        "yi-6b-chat-w4a16g32",
+        "yi-6b-chat-w4a16g128",
+        "yi-6b-chat-w4a16g256",
     ],
     "GreenBit-yi-chat",
     "https://huggingface.co/GreenBitAI",

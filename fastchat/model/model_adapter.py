@@ -2014,10 +2014,12 @@ class GreenBitAdapter(BaseModelAdapter):
         try:
             from colorama import init, Fore, Style
             from .low_bit_llama.model import load_llama_model
-            print(Style.BRIGHT + Fore.CYAN + f"Using GreenBitAdapter..." + f" model_path:" + model_path)
 
             # Yi-6B-4bit specific configuration:
             bits, groupsize = self.extract_bits_and_group_size(model_path)
+            print(Style.BRIGHT + Fore.CYAN + f"Using GreenBitAdapter" + f" model_path:" + model_path
+                  + " bits:" + str(bits) + " group_size:" + str(groupsize))
+
             cache_dir = os.path.expanduser('~/.cache/huggingface/hub') # Huggingface default cache location
             asym = False
             double_groupsize = 32
@@ -2025,8 +2027,7 @@ class GreenBitAdapter(BaseModelAdapter):
             v1 = False
             _dtype = torch.half
             use_gbe = True
-            # groupsize = 32
-            # bits = 4
+
             model, tokenizer = load_llama_model(model_path, cache_dir=cache_dir, groupsize=groupsize,
                                                 double_groupsize=double_groupsize, bits=bits, half=True, v1=v1,
                                                 asym=asym, kquant=kquant, dtype=_dtype, use_gbe=use_gbe, gbe_mode=0)

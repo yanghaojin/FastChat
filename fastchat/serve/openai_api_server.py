@@ -21,7 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
 import httpx
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 import shortuuid
 import tiktoken
 import uvicorn
@@ -466,7 +466,8 @@ async def chat_completion_stream_generator(
         chunk = ChatCompletionStreamResponse(
             id=id, choices=[choice_data], model=model_name
         )
-        yield f"data: {chunk.json(exclude_unset=True, ensure_ascii=False)}\n\n"
+        chunk_dict = chunk.dict(exclude_unset=True)
+        yield f"data: {json.dumps(chunk_dict, ensure_ascii=False)}\n\n"
 
         previous_text = ""
         async for content in generate_completion_stream(gen_params, worker_addr):
@@ -496,10 +497,12 @@ async def chat_completion_stream_generator(
                 if content.get("finish_reason", None) is not None:
                     finish_stream_events.append(chunk)
                 continue
-            yield f"data: {chunk.json(exclude_unset=True, ensure_ascii=False)}\n\n"
+            chunk_dict = chunk.dict(exclude_unset=True)
+            yield f"data: {json.dumps(chunk_dict, ensure_ascii=False)}\n\n"
     # There is not "content" field in the last delta message, so exclude_none to exclude field "content".
     for finish_chunk in finish_stream_events:
-        yield f"data: {finish_chunk.json(exclude_none=True, ensure_ascii=False)}\n\n"
+        finish_chunk_dict = finish_chunk.dict(exclude_none=True)
+        yield f"data: {json.dumps(finish_chunk_dict, ensure_ascii=False)}\n\n"
     yield "data: [DONE]\n\n"
 
 

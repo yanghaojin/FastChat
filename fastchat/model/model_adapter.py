@@ -218,7 +218,13 @@ def load_model(
         kwargs = {"torch_dtype": torch.float16}
         import transformers
 
-        version = tuple(int(v) for v in transformers.__version__.split("."))
+        version_str = transformers.__version__
+        version_match = re.match(r'(\d+)\.(\d+)\.(\d+)', version_str)
+        if version_match:
+            version = tuple(int(v) for v in version_match.groups())
+        else:
+            raise ValueError("Error: cannot identify version information of transformers module.")
+
         if version < (4, 35, 0):
             # NOTE: Recent transformers library seems to fix the mps issue, also
             # it has made some changes causing compatibility issues with our
@@ -342,6 +348,13 @@ def load_model(
 
     if debug:
         print(model)
+
+    try:
+        from bitorch_engine.utils.model_helper import prepare_bie_layers
+        prepare_bie_layers(model)
+        print('MPQ layer param-preparation finished.')
+    except ModuleNotFoundError as e:
+        print(f"Module not found: {e}. Engine layers will not be available.")
 
     return model, tokenizer
 
@@ -2030,7 +2043,7 @@ class GreenBitAdapter(BaseModelAdapter):
 
             model, tokenizer = load_llama_model(model_path, cache_dir=cache_dir, groupsize=groupsize,
                                                 double_groupsize=double_groupsize, bits=bits, half=True, v1=v1,
-                                                asym=asym, kquant=kquant, dtype=_dtype, use_gbe=use_gbe, mpq_type=os.environ['BIE_MPQ_TYPE'])
+                                                asym=asym, kquant=kquant, dtype=_dtype, use_gbe=use_gbe, mpq_type=1)
         except ModuleNotFoundError as e:
             raise Exception(f"Module not found: {e}.")
         return model, tokenizer

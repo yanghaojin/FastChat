@@ -2030,7 +2030,7 @@ class GreenBitAdapter(BaseModelAdapter):
 
             model, tokenizer = load_llama_model(model_path, cache_dir=cache_dir, groupsize=groupsize,
                                                 double_groupsize=double_groupsize, bits=bits, half=True, v1=v1,
-                                                asym=asym, kquant=kquant, dtype=_dtype, use_gbe=use_gbe, gbe_mode=1)
+                                                asym=asym, kquant=kquant, dtype=_dtype, use_gbe=use_gbe, mpq_type=os.environ['BIE_MPQ_TYPE'])
         except ModuleNotFoundError as e:
             raise Exception(f"Module not found: {e}.")
         return model, tokenizer

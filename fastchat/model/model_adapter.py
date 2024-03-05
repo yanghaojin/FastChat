@@ -2238,7 +2238,7 @@ class GreenBitAdapter(BaseModelAdapter):
 
     def get_default_conv_template(self, model_path: str) -> Conversation:
         # for GreenBit-Yi-6b-chat-4bit
-        return get_conv_template("yi-6b-chat-w4a16g32")
+        return get_conv_template("GreenBit-Yi-Chat")
 
 
 class BagelAdapter(BaseModelAdapter):

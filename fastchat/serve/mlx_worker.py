@@ -48,6 +48,9 @@ class MLXWorker(BaseModelWorker):
         no_register: bool,
         llm_engine: "MLX",
         conv_template: str,
+        trust_remote_code: True or None = None,
+        eos_token: str = None,
+        adapter_file: str = ""
     ):
         super().__init__(
             controller_addr,
@@ -64,7 +67,15 @@ class MLXWorker(BaseModelWorker):
         )
 
         self.model_name = model_path
-        self.mlx_model, self.mlx_tokenizer = load(model_path)
+
+        # Building tokenizer_config
+        tokenizer_config = {"trust_remote_code": True if trust_remote_code else None}
+        if eos_token is not None:
+            tokenizer_config["eos_token"] = eos_token
+
+        self.mlx_model, self.mlx_tokenizer = load(
+            model_path, adapter_file=adapter_file, tokenizer_config=tokenizer_config
+        )
 
         self.tokenizer = self.mlx_tokenizer
         # self.context_len = get_context_length(
@@ -268,6 +279,17 @@ if __name__ == "__main__":
         help="Trust remote code (e.g., from HuggingFace) when"
         "downloading the model and tokenizer.",
     )
+    parser.add_argument(
+        "--eos-token",
+        type=str,
+        default=None,
+        help="End of sequence token for tokenizer",
+    )
+    parser.add_argument(
+        "--adapter-file",
+        type=str,
+        help="Optional path for the trained adapter weights.",
+    )
 
     args, unknown = parser.parse_known_args()
 
@@ -284,5 +306,8 @@ if __name__ == "__main__":
         False,
         "MLX",
         args.conv_template,
+        trust_remote_code = args.trust_remote_code,
+        eos_token = args.eos_token,
+        adapter_file = args.adapter_file
     )
     uvicorn.run(app, host=args.host, port=args.port, log_level="info")
